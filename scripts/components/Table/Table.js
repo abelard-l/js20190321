@@ -5,14 +5,35 @@ export class Table extends BaseComponent {
     super();
     
     this._el = element;
+    this._data = data;
 
      
-    this._render(data);
+    this._render(this._data);
 
     this._el.addEventListener('click', e => {
       this._onRowClick(e);
-    })
+    });
+
+    this._el.addEventListener('click', e => {
+        const target = e.target;
+        if (target.nodeName !== "TH") return;
+
+        
+    });
   }
+
+  filter(search) {
+      if (search.length > 0) {
+          this._render(this._data.filter(value => {
+              if (value.id.includes(search)) return true;
+          }));    
+      }
+      else {
+          this._render(this._data);
+      }     
+  }
+
+
 
   _onRowClick(e) {
     const target = e.target.closest('tbody tr');
