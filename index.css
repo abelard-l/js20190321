@@ -1,12 +1,26 @@
-html, body {
+html,
+body {
     height: 100%;
 }
 
 #app {
     display: flex;
-    height: 100%;
     flex-direction: column;
     justify-content: flex-end;
+}
+
+.portfolio {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+}
+
+.collapsible-body {
+    background: white;
+}
+
+p.collapsible-header {
+    margin: 0;
 }
 
 .row {
@@ -29,6 +43,15 @@ tr td {
     margin-bottom: auto;
 }
 
-form, form > div {
+form,
+form>div {
     padding-left: 0 !important;
+}
+
+thead th {
+    cursor: pointer;
+}
+
+.sort-header {
+    background-color: lightgrey;
 }

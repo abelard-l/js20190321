@@ -1,110 +1,63 @@
-const data = [
-  {
-    "id": "btc-bitcoin",
-    "name": "Bitcoin",
-    "symbol": "BTC",
-    "rank": 1,
-    "is_new": false,
-    "is_active": true,
-    "type": "coin",
-    "price": 1000
-  },
-  {
-    "id": "eth-ethereum",
-    "name": "Ethereum",
-    "symbol": "ETH",
-    "rank": 2,
-    "is_new": false,
-    "is_active": true,
-    "type": "coin",
-    "price": 900
-  },
-  {
-    "id": "xrp-xrp",
-    "name": "XRP",
-    "symbol": "XRP",
-    "rank": 3,
-    "is_new": false,
-    "is_active": true,
-    "type": "coin",
-    "price": 800
-  },
-  {
-    "id": "eos-eos",
-    "name": "EOS",
-    "symbol": "EOS",
-    "rank": 4,
-    "is_new": false,
-    "is_active": true,
-    "type": "coin",
-    "price": 700
-  },
-  {
-    "id": "ltc-litecoin",
-    "name": "Litecoin",
-    "symbol": "LTC",
-    "rank": 5,
-    "is_new": false,
-    "is_active": true,
-    "type": "coin",
-    "price": 600
-  },
-  {
-    "id": "bch-bitcoin-cash",
-    "name": "Bitcoin Cash",
-    "symbol": "BCH",
-    "rank": 6,
-    "is_new": false,
-    "is_active": true,
-    "type": "coin",
-    "price": 500
-  },
-  {
-    "id": "ada-cardano",
-    "name": "Cardano",
-    "symbol": "ADA",
-    "rank": 11,
-    "is_new": false,
-    "is_active": true,
-    "type": "coin",
-    "price": 400
-  },
-  {
-    "id": "miota-iota",
-    "name": "IOTA",
-    "symbol": "MIOTA",
-    "rank": 14,
-    "is_new": false,
-    "is_active": true,
-    "type": "coin",
-    "price": 300
-  },
-  {
-    "id": "neo-neo",
-    "name": "NEO",
-    "symbol": "NEO",
-    "rank": 17,
-    "is_new": false,
-    "is_active": true,
-    "type": "coin",
-    "price": 200
-  },
-  {
-    "id": "xem-nem",
-    "name": "NEM",
-    "symbol": "XEM",
-    "rank": 19,
-    "is_new": false,
-    "is_active": true,
-    "type": "coin",
-    "price": 100
-  }
-];
+const COINS_URL = 'https://api.coinpaprika.com/v1/coins';
+
+const getSingleCoinUrl = id => `https://api.coinpaprika.com/v1/coins/${id}/ohlcv/today/`;
 
 const DataService = {
-  getCurrencies() {
-    return data;
-  }
+
+  _httpRequest(url, method = "GET") {
+    return new Promise((resolve, reject) => {
+        const xml = new XMLHttpRequest();
+        xml.open(method, url);
+        xml.send();
+        xml.onload = function() {
+            if (this.status === 200) {
+                resolve(this.responseText);
+            } else {
+                const error = new Error(this.statusText);
+                error.code = this.status;
+                reject(error);
+            }
+        }
+    });  
+  },
+
+
+  getCurrencies(callback) {
+    let currencies = [];
+
+    DataService._httpRequest(COINS_URL).then(
+    result => {
+        return result;
+    }).then(
+        result => {
+            return JSON.parse(result).slice(0, 10);
+        }
+    ).then(
+        currencies => {
+            let currenciesURLs = [];
+            currencies.forEach(value => {
+                currenciesURLs.push(getSingleCoinUrl(value.id));
+            })
+
+            Promise.all(currenciesURLs.map(value => {
+                return DataService._httpRequest(value);
+            })).then(result => {
+               return result.map(value => {
+                   return JSON.parse(value);
+               });
+            }).then( result => {
+                result.forEach( (value, index) => {
+                    currencies[index].price = value[0].close.toFixed(2);
+                })
+                callback(currencies);
+            });
+
+        }
+    ).catch(error => {
+        console.log(error);
+    })
+  },
+
 }
 
 export default DataService;
