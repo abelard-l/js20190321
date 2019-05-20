@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
     height: 100%;
 }
 
@@ -9,16 +10,17 @@ html, body {
 }
 
 .portfolio {
-  position: fixed;
-  top: 20px;
-  right: 20px;
+    position: fixed;
+    top: 20px;
+    right: 20px;
 }
 
 .collapsible-body {
-  background: white;
+    background: white;
 }
+
 p.collapsible-header {
-  margin: 0;
+    margin: 0;
 }
 
 .row {
@@ -41,6 +43,15 @@ tr td {
     margin-bottom: auto;
 }
 
-form, form > div {
+form,
+form>div {
     padding-left: 0 !important;
+}
+
+thead th {
+    cursor: pointer;
+}
+
+.sort-header {
+    background-color: lightgrey;
 }
